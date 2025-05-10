@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h2>Connexion</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Se connecter</button>
+</form>
+<p>Pas encore de compte ? <a href="{% url 'accounts:register' %}">Inscrivez-vous</a></p>
+<p><a href="{% url 'accounts:password_reset' %}">Mot de passe oublié ?</a></p>
+{% endblock %}

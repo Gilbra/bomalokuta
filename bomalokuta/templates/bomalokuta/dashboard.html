@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Tableau de Bord{% endblock %}
+
+{% block content %}
+<div class="dashboard-content">
+    <h2>Tableau de Bord</h2>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            Conversation en cours
+        </div>
+        <div class="card-body">
+            <div id="conversation" class="mb-3">
+                {% for message in messages %}
+                <div class="message mb-2">
+                    <strong>{{ message.sender }}:</strong>
+                    <p>{{ message.content }}</p>
+                    <small class="text-muted">{{ message.timestamp }}</small>
+                </div>
+                {% empty %}
+                <p>Aucun message pour le moment.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fixed-bottom-form">
+    <form method="POST" action="/bomalokuta/submit/" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="input-group p-5">
+            <textarea class="form-control" id="content" name="content" rows="3" placeholder="Écrivez ici votre message ou soumission de contenu..."></textarea>
+            <input type="file" class="form-control" id="file" name="file" style="display: none;">
+            <button class="btn btn-outline-secondary" type="button" id="attachFile">
+                <i class="fas fa-paperclip"></i>
+            </button>
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('attachFile').addEventListener('click', function() {
+        document.getElementById('file').click();
+    });
+
+    document.getElementById('content').addEventListener('input', function() {
+        this.rows = Math.min(this.value.split('\n').length, 5); // Ajuster la hauteur automatiquement (max 5 lignes)
+    });
+</script>
+
+{% endblock %}

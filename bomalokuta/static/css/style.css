@@ -1,0 +1,160 @@
+/* Custom styles for profile avatar */
+.navbar .navbar-nav .nav-item img {
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.navbar .navbar-nav .nav-item img:hover {
+    transform: scale(1.1);
+}
+
+/* Style personnalisé pour la barre latérale visible par défaut */
+@media (min-width: 768px) { /* Pour les écrans moyens et plus grands */
+    .sidebar {
+        position: fixed; /* Ou absolute selon votre mise en page */
+        top: 56px; /* Hauteur de la navbar fixée */
+        left: 0;
+        bottom: 0;
+        width: 250px; /* Largeur souhaitée de la barre latérale */
+        background-color: #f8f9fa; /* Couleur de fond de la barre latérale */
+        padding-top: 15px;
+        border-right: 1px solid #dee2e6;
+        overflow-y: auto; /* Pour le défilement si le contenu est long */
+    }
+    .main-content {
+        margin-left: 250px; /* Ajuster la marge pour laisser la place à la barre latérale */
+        padding: 15px;
+        margin-top: 56px; /* Compenser la navbar fixée */
+    }
+}
+/* Styles pour les petits écrans si vous souhaitez un bouton de menu */
+@media (max-width: 767px) {
+    .sidebar {
+        display: none; /* Masquer la barre latérale sur les petits écrans */
+    }
+    .main-content {
+        padding: 15px;
+        margin-top: 56px; /* Compenser la navbar fixée */
+    }
+    /* Ajoutez ici le style pour votre bouton de menu si vous en avez un */
+}
+
+/* Dans base.html ou css/style.css */
+.fixed-bottom-form {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f8f9fa; /* Couleur de fond claire */
+    padding: 10px;
+    border-top: 1px solid #dee2e6;
+    z-index: 1000; /* Pour s'assurer qu'il est au-dessus des autres éléments */
+}
+
+.fixed-bottom-form .input-group {
+    display: flex;
+    align-items: center;
+}
+
+.fixed-bottom-form textarea.form-control {
+    resize: none; /* Empêcher le redimensionnement manuel */
+    margin-right: 5px;
+}
+
+.fixed-bottom-form button {
+    margin-left: 5px;
+}
+
+/* Ajuster le contenu principal pour éviter le chevauchement */
+.dashboard-content {
+    padding-bottom: 80px; /* Ajuster cette valeur en fonction de la hauteur de votre formulaire */
+}
+
+/* Sur les écrans plus petits, on pourrait envisager un padding moins important */
+@media (max-width: 767px) {
+    .dashboard-content {
+        padding-bottom: 120px; /* Ajuster si le formulaire prend plus de hauteur sur mobile */
+    }
+    .fixed-bottom-form textarea.form-control {
+        rows: 2; /* Hauteur initiale plus petite sur mobile */
+    }
+}
+/* Styles pour le formulaire fixé en bas et centré */
+.fixed-bottom-form {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(248, 249, 250, 0.9); /* Fond légèrement transparent pour un effet plus moderne */
+    padding: 15px 20px; /* Un peu plus de padding vertical et horizontal */
+    border-top: 1px solid #dee2e6;
+    z-index: 1000;
+    display: flex; /* Utilisation de Flexbox pour le centrage du contenu */
+    justify-content: center; /* Centrage horizontal du contenu */
+}
+
+.fixed-bottom-form .form-wrapper {
+    max-width: 768px; /* Largeur maximale du formulaire pour le centrage sur les grands écrans (ajustez selon votre préférence) */
+    width: 100%; /* Le formulaire prendra toute la largeur disponible dans son wrapper */
+    display: flex;
+    align-items: center; /* Alignement vertical des éléments */
+}
+
+.fixed-bottom-form .input-group {
+    display: flex;
+    flex-grow: 1; /* Le champ de texte prendra l'espace disponible */
+    margin-right: 10px; /* Un peu d'espace entre le texte et les boutons */
+}
+
+.fixed-bottom-form textarea.form-control {
+    resize: none;
+    margin-right: 5px;
+    border-radius: 0.25rem; /* Bords arrondis */
+}
+
+.fixed-bottom-form button {
+    margin-left: 5px;
+    border-radius: 0.25rem;
+}
+
+/* Style pour le bouton d'attachement */
+.fixed-bottom-form #attachFile {
+    margin-left: 10px;
+}
+
+/* Ajuster le contenu principal pour éviter le chevauchement */
+.dashboard-content {
+    padding-bottom: 100px; /* Ajuster en fonction de la hauteur du formulaire et du padding */
+}
+
+/* Sur les écrans plus petits, le formulaire prendra toute la largeur */
+@media (max-width: 767px) {
+    .fixed-bottom-form {
+        padding: 10px;
+        justify-content: flex-start; /* Aligner à gauche sur les petits écrans */
+    }
+    .fixed-bottom-form .form-wrapper {
+        max-width: none; /* Le formulaire prend toute la largeur sur mobile */
+    }
+    .fixed-bottom-form .input-group {
+        flex-direction: column; /* Afficher les éléments en colonne sur mobile */
+    }
+    .fixed-bottom-form textarea.form-control {
+        margin-bottom: 10px;
+        margin-right: 0;
+    }
+    .fixed-bottom-form button {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+    .dashboard-content {
+        padding-bottom: 160px; /* Ajuster pour un formulaire plus haut sur mobile */
+    }
+}
+
+/* Animation subtile au survol des boutons */
+.fixed-bottom-form button:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+    transition: all 0.2s ease-in-out;
+}

@@ -1,0 +1,14 @@
+Django
+djangorestframework
+gunicorn
+whitenoise
+requests
+pillow
+numpy
+psycopg2-binary
+transformers
+torch
+sentencepiece
+django-cors-headers
+python-dotenv
+dj-database-url

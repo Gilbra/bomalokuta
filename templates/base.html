@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bomalokuta | {% block title %}{% endblock %}</title>
+
+    <!-- CSS externes -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Font Awesome (pour icônes) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- CSS interne -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <style>
+        /* Sidebar améliorée */
+        @media (min-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 56px;
+                left: 0;
+                bottom: 0;
+                width: 250px;
+                background-color: #f8f9fa;
+                border-right: 1px solid #dee2e6;
+                padding-top: 20px;
+                overflow-y: auto;
+                transition: all 0.3s ease-in-out;
+            }
+            .sidebar a {
+                padding: 10px 15px;
+                display: block;
+                color: #333;
+                transition: background 0.3s;
+            }
+            .sidebar a:hover {
+                background-color: #e2e6ea;
+                font-weight: bold;
+            }
+            .main-content {
+                margin-left: 250px;
+                padding: 20px;
+                margin-top: 56px;
+            }
+        }
+        @media (max-width: 767px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                padding: 15px;
+                margin-top: 56px;
+            }
+        }
+        /* Mode sombre */
+        body.sombre {
+            background-color: #2b3a44;
+            color: white;
+        }
+        body.sombre .btn-dark {
+            background-color: #333;
+            color: #fff;
+        }
+        .sombre .card {
+            background-color: #333;
+            color: white;
+        }
+        
+        .sombre .bg-primary {
+            background-color: #1e1e1e !important;
+        }
+        
+        .sombre .bg-white {
+            background-color: #2b2b2b !important;
+        }
+        
+        .sombre .text-dark {
+            color: white !important;
+        }
+        
+        .sombre .text-muted {
+            color: #b0b0b0 !important;
+        }
+        body.sombre .sidebar {
+            background-color: #333; /* Changez la couleur de fond de la sidebar */
+        }
+        
+        body.sombre .sidebar a {
+            color: white; /* Changez la couleur des liens */
+        }
+        
+        body.sombre .sidebar a:hover {
+            background-color: #555; /* Changez la couleur du survol des liens */
+        }
+        
+        body.sombre .sidebar .nav-link {
+            color: white !important;
+        }
+        
+        body.sombre .sidebar .nav-link:hover {
+            background-color: #444;
+        }
+        
+        body.sombre .bg-primary {
+            background-color: #1e1e1e !important;
+        }
+        
+        body.sombre .bg-white {
+            background-color: #2b2b2b !important;
+        }
+        
+        body.sombre .text-dark {
+            color: white !important;
+        }
+        
+        body.sombre .text-muted {
+            color: #b0b0b0 !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <img src="{% static 'images/logo.png' %}" alt="Logo" width="40" height="40" class="me-2">
+            <strong>Bomalokuta</strong>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <img src="{{ user.profile_picture.url }}" class="rounded-circle" width="30" height="30" alt="Profil">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/accounts/profile">Mon Profil</a></li>
+                            <li><a class="dropdown-item" href="/logout">Déconnexion</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="/login">Se connecter</a></li>
+                {% endif %}
+                <button id="mode-toggle" class="btn btn-dark mb-3">
+                    <i class="fas fa-moon"></i> <!-- Icône de lune pour le mode sombre -->
+                </button>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Layout -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- Si utilisateur connecté, afficher le layout avec sidebar -->
+        {% if request.user.is_authenticated %}
+            <nav class="col-md-3 d-none d-md-block sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/bomalokuta/"><i class="fas fa-home me-2"></i>Tableau de bord</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/bomalokuta/submissions/"><i class="fas fa-upload me-2"></i>Mes Soumissions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/bomalokuta/history/"><i class="fas fa-history me-2"></i>Historique</a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+        
+        <main class="{% if request.user.is_authenticated %}col-md-9 ms-sm-auto px-md-4 main-content{% else %}container p-5 ml-3 mr-3 {% endif %}" style="margin-top: 80px;" data-aos="fade-up">
+            {% if request.user.is_authenticated %}
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">{% block titre %}{% endblock %}</h1>
+            </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+        
+    </div>
+</div>
+
+<!-- JS externes -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<!-- Initialisation des plugins -->
+<script>
+    AOS.init();
+    
+    // Changer de mode sombre/clair
+    $('#mode-toggle').on('click', function () {
+        $('body').toggleClass('sombre'); // Appliquer ou retirer la classe 'sombre' du body
+    
+        // Vérifier si le body a la classe 'sombre'
+        const mode = $('body').hasClass('sombre') ? 'sombre' : 'clair';
+        
+        // Sauvegarder le choix de mode dans le stockage local
+        localStorage.setItem('theme', mode);
+    
+        // Changer l'icône en fonction du mode
+        const icon = $('#mode-toggle i');
+        if ($('body').hasClass('sombre')) {
+            icon.removeClass('fa-moon').addClass('fa-sun'); // Passer à l'icône du soleil
+        } else {
+            icon.removeClass('fa-sun').addClass('fa-moon'); // Passer à l'icône de la lune
+        }
+    });
+    
+    // Charger le mode enregistré lors du chargement de la page
+    $(document).ready(function () {
+        const savedTheme = localStorage.getItem('theme');
+        
+        if (savedTheme === 'sombre') {
+            $('body').addClass('sombre'); // Appliquer la classe sombre
+            $('#mode-toggle i').removeClass('fa-moon').addClass('fa-sun'); // Changer l'icône en soleil
+        } else {
+            $('body').removeClass('sombre'); // Enlever la classe sombre
+            $('#mode-toggle i').removeClass('fa-sun').addClass('fa-moon'); // Changer l'icône en lune
+        }
+    });
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: bomalokuta
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn kabod.wsgi
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: kabod.settings
+      - key: PYTHON_VERSION
+        value: 3.11
