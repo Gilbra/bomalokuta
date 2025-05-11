@@ -62,7 +62,7 @@ def analyze_text_view(request):
             # Les données envoyées (par le web, WhatsApp, SMS gateway) seront probablement JSON.
             data = json.loads(request.body.decode('utf-8'))
             text_to_analyze = data.get('text', None) # On s'attend à une clé 'text'
-
+            print("effectué")
             if text_to_analyze:
                 print(f"Texte reçu à analyser : {text_to_analyze}") # Log dans la console du serveur
 
