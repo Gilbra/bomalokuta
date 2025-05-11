@@ -1,6 +1,12 @@
 # bomalokuta/utils.py
 
-from transformers import pipeline
+try:
+    from transformers import pipeline
+except ImportError:
+    pipeline = None  # ou une fonction mockée
+if pipeline is None:
+    print("⚠️ Warning: transformers module not available. Some features may not work.")
+
 from functools import lru_cache
 
 @lru_cache(maxsize=1)
