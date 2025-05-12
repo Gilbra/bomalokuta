@@ -1,0 +1,7 @@
+torch>=2.0.0
+sentencepiece
+transformers>=4.30.0
+gradio>=3.40.0
+accelerate
+fastapi
+utils

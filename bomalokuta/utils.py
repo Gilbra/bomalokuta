@@ -1,23 +1,16 @@
-# bomalokuta/utils.py
+import requests
 
-try:
-    from transformers import pipeline
-except ImportError:
-    pipeline = None  # ou une fonction mockée
-if pipeline is None:
-    print("⚠️ Warning: transformers module not available. Some features may not work.")
+HUGGINGFACE_API = "https://Gilbra-bomalkt.hf.space/run/predict"
 
-from functools import lru_cache
-
-@lru_cache(maxsize=1)
-def get_fake_news_detector():
-    """
-    Charge une seule fois le modèle de détection de fake news.
-    Utilise un cache pour éviter les rechargements multiples.
-    """
-    print("Chargement du modèle Fake News...")
-    return pipeline(
-        "text-classification",
-        model="mrm8488/bert-tiny-fake-news",
-        tokenizer="mrm8488/bert-tiny-fake-news"
-    )
+def send_to_chatglm(prompt):
+    try:
+        response = requests.post(
+            HUGGINGFACE_API,
+            json={"data": [prompt]},
+            timeout=60
+        )
+        response.raise_for_status()
+        result = response.json()
+        return result["data"][0]
+    except Exception as e:
+        return f"Erreur IA : {str(e)}"

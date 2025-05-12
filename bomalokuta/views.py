@@ -9,7 +9,7 @@ import json # Pour lire les données JSON envoyées dans le corps de la requête
 
 from bomalokuta.models import *
 
-from .utils import get_fake_news_detector
+from bomalokuta.utils import send_to_chatglm
 
 def home(request):
     try:
@@ -62,12 +62,13 @@ def analyze_text_view(request):
             # Les données envoyées (par le web, WhatsApp, SMS gateway) seront probablement JSON.
             data = json.loads(request.body.decode('utf-8'))
             text_to_analyze = data.get('text', None) # On s'attend à une clé 'text'
-            print("effectué")
+            
             if text_to_analyze:
                 print(f"Texte reçu à analyser : {text_to_analyze}") # Log dans la console du serveur
 
                 # --- LOGIQUE FUTURE PRINCIPALE ICI ---
                 # Étape 4: Appeler le modèle IA avec text_to_analyze
+                ia_response = send_to_chatglm(text_to_analyze)
                 # Étape 5: Effectuer la recherche web avec text_to_analyze ou des termes dérivés
                 # Étape 6: Combiner les résultats de l'IA et de la recherche web pour l'analyse finale
                 # Déterminer si l'info est vraie/fausse et générer des commentaires/sources
@@ -76,8 +77,8 @@ def analyze_text_view(request):
                 # Pour l'instant, on renvoie juste une confirmation
                 response_data = {
                     'status': 'success',
-                    'received_text': "Gilbra",
-                    'message': "Gilbra",
+                    'received_text': text_to_analyze,
+                    'message': ia_response,
                     'analysis_result': 'pending' # Placeholder
                 }
                 # On retourne une réponse JSON
