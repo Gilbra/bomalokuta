@@ -1,0 +1,86 @@
+# === Python cache ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# === Environnements virtuels ===
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# === IDEs ===
+.vscode/
+.idea/
+
+# === macOS ===
+.DS_Store
+
+# === Windows ===
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# === Logs, fichiers temporaires ===
+*.log
+*.pot~
+*.swp
+*.tmp
+*.bak
+
+# === Variables d’environnement ===
+.env
+.env.*
+.venv
+.envrc
+
+# === Django ===
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+
+# === mypy, coverage, pytest ===
+.mypy_cache/
+.dmypy.json
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# === Build / Packaging ===
+build/
+dist/
+downloads/
+.eggs/
+*.egg-info/
+*.egg
+*.whl
+*.manifest
+
+# === Node.js (si frontend JS) ===
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+
+# === Git fichiers temporaires ===
+*.orig
+*.rej
+*.merge_backup
+
+# === Jupyter Notebooks ===
+.ipynb_checkpoints/
+
+# === VSCode extensions et logs ===
+*.code-workspace
+.vscode-test/
+
+# === Dossiers personnels ===
+__pypackages__/
+*.tox/
+.tox/
