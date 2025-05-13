@@ -31,4 +31,5 @@ def analyze_text_async(text):
     Tâche Celery qui appelle ChatGLM et retourne le JSON réponse.
     """
     logger.info(f"async Texte reçu : {text}")
+    print("+++++")
     return send_to_chatglm(text)

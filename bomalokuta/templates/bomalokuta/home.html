@@ -33,109 +33,125 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    const chatContainer = $('#chat-container');
+<script src="{% static 'js/chat.js' %}"></script>
 
-    function ajouterMessage(content, type) {
-        const messageDiv = $('<div></div>').addClass('d-flex mb-3 align-items-start')
-            .addClass(type === 'user' ? 'justify-content-end' : 'justify-content-start');
+    {% comment %}
+        <script>
+            /*
+            const chatContainer = $('#chat-container');
 
-        const avatar = $('<div></div>').addClass('me-2')
-            .html(type === 'user'
-                ? '<i class="fas fa-user-circle fa-2x text-primary"></i>'
-                : '<i class="fas fa-robot fa-2x text-success"></i>');
+            function ajouterMessage(content, type) {
+                const messageDiv = $('<div></div>').addClass('d-flex mb-3 align-items-start')
+                    .addClass(type === 'user' ? 'justify-content-end' : 'justify-content-start');
 
-        const bubble = $('<div></div>')
-            .addClass('p-3 rounded shadow-sm')
-            .addClass(type === 'user' ? 'bg-primary text-white' : 'bg-white text-dark')
-            .css({
-                'max-width': '75%',
-                'white-space': 'pre-wrap'
-            })
-            .html(content);
+                const avatar = $('<div></div>').addClass('me-2')
+                    .html(type === 'user'
+                        ? '<i class="fas fa-user-circle fa-2x text-primary"></i>'
+                        : '<i class="fas fa-robot fa-2x text-success"></i>');
 
-        if (type === 'user') {
-            messageDiv.append(bubble).append(avatar);
-        } else {
-            messageDiv.append(avatar).append(bubble);
-        }
+                const bubble = $('<div></div>')
+                    .addClass('p-3 rounded shadow-sm')
+                    .addClass(type === 'user' ? 'bg-primary text-white' : 'bg-white text-dark')
+                    .css({
+                        'max-width': '75%',
+                        'white-space': 'pre-wrap'
+                    })
+                    .html(content);
 
-        chatContainer.append(messageDiv);
-        chatContainer.scrollTop(chatContainer[0].scrollHeight);
-    }
-
-    function afficherAnimationFrappe() {
-        const typingDiv = $('<div></div>').addClass('d-flex mb-3 align-items-start justify-content-start').attr('id', 'typing');
-        const avatar = $('<div></div>').addClass('me-2')
-            .html('<i class="fas fa-robot fa-2x text-success"></i>');
-        const bubble = $('<div></div>').addClass('p-3 rounded shadow-sm bg-white text-muted')
-            .html('<i class="fas fa-ellipsis-h fa-fade"></i>');
-
-        typingDiv.append(avatar).append(bubble);
-        chatContainer.append(typingDiv);
-        chatContainer.scrollTop(chatContainer[0].scrollHeight);
-    }
-
-    function supprimerAnimationFrappe() {
-        $('#typing').remove();
-    }
-
-    $('#analyseForm').on('submit', function (e) {
-    e.preventDefault();
-
-    const texte = $('#texteAAnalyser').val().trim();
-        if (!texte) return;
-
-        ajouterMessage(texte, 'user');
-        $('#texteAAnalyser').val('');
-        $('#texteAAnalyser').prop('disabled', true);
-        $('button[type=submit]').prop('disabled', true);
-        afficherAnimationFrappe();
-
-        // Envoi vers l'API asynchrone
-        $.ajax({
-            url: "/bomalokuta/api/analyze/",
-            method: "POST",
-            contentType: "application/json",
-            headers: {"X-CSRFToken": "{{ csrf_token }}"},
-            data: JSON.stringify({ text: texte }),
-            success: function(data) {
-                const taskId = data.task_id;
-                // Polling pour le résultat
-                const interval = setInterval(function() {
-                    $.get(`/bomalokuta/api/analyze/${taskId}/`, function(res) {
-                        if (res.status === 'done') {
-                            clearInterval(interval);
-                            ajouterMessage(res.result, 'bot');
-                            $('#texteAAnalyser').prop('disabled', false);
-                            $('button[type=submit]').prop('disabled', false);
-                        }
-                    });
-                }, 2000);
-            },
-            error: function(xhr) {
-                ajouterMessage("Erreur lors de la requête.", 'bot');
-                $('#texteAAnalyser').prop('disabled', false);
-                $('button[type=submit]').prop('disabled', false);
-            }
-        });
-
-
-    });
-
-    function suivreTache(task_id) {
-        let interval = setInterval(function () {
-            $.get(`/bomalokuta/api/resultats/${task_id}/`, function (data) {
-                if (data.status === 'success' || data.status === 'failure') {
-                    supprimerAnimationFrappe();
-                    ajouterMessage(data.result.message || data.result.error, 'bot');
-                    $('#texteAAnalyser').prop('disabled', false);
-                    $('button[type=submit]').prop('disabled', false);
-                    clearInterval(interval);
+                if (type === 'user') {
+                    messageDiv.append(bubble).append(avatar);
+                } else {
+                    messageDiv.append(avatar).append(bubble);
                 }
-            });
-        }, 2000); // toutes les 2 secondes
-    }
 
-</script>
+                chatContainer.append(messageDiv);
+                chatContainer.scrollTop(chatContainer[0].scrollHeight);
+            }
+
+            function afficherAnimationFrappe() {
+                const typingDiv = $('<div></div>').addClass('d-flex mb-3 align-items-start justify-content-start').attr('id', 'typing');
+                const avatar = $('<div></div>').addClass('me-2')
+                    .html('<i class="fas fa-robot fa-2x text-success"></i>');
+                const bubble = $('<div></div>').addClass('p-3 rounded shadow-sm bg-white text-muted')
+                    .html('<i class="fas fa-ellipsis-h fa-fade"></i>');
+
+                typingDiv.append(avatar).append(bubble);
+                chatContainer.append(typingDiv);
+                chatContainer.scrollTop(chatContainer[0].scrollHeight);
+            }
+
+            function supprimerAnimationFrappe() {
+                $('#typing').remove();
+            }
+
+            $('#analyseForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const textarea = $('#texteAAnalyser');
+                const sendButton = $('button[type=submit]');
+                const texte = textarea.val().trim();
+                if (!texte) return;
+
+                ajouterMessage(texte, 'user');
+                textarea.val('').prop('disabled', true);
+                sendButton.prop('disabled', true);
+                afficherAnimationFrappe();
+
+                $.ajax({
+                    url: "/bomalokuta/api/analyze/",
+                    method: "POST",
+                    contentType: "application/json",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    data: JSON.stringify({ text: texte }),
+                    success: function (data) {
+                        const taskId = data.task_id;
+                        let attempts = 0;
+                        const maxAttempts = 10;
+                        const pollInterval = 2000;
+
+                        const interval = setInterval(function () {
+                            attempts++;
+                            if (attempts > maxAttempts) {
+                                clearInterval(interval);
+                                supprimerAnimationFrappe();
+                                ajouterMessage("Temps d'attente dépassé, veuillez réessayer.", 'bot');
+                                textarea.prop('disabled', false).val(texte);
+                                sendButton.prop('disabled', false);
+                                return;
+                            }
+
+                            $.get(`/bomalokuta/api/analyze/${taskId}/`, function (res) {
+                                if (res.status === 'done') {
+                                    clearInterval(interval);
+                                    supprimerAnimationFrappe();
+                                    ajouterMessage(res.result, 'bot');
+                                    textarea.prop('disabled', false).val('');
+                                    sendButton.prop('disabled', false);
+                                }
+                            }).fail(function (xhr) {
+                                if (xhr.status === 429) {
+                                    clearInterval(interval);
+                                    supprimerAnimationFrappe();
+                                    ajouterMessage("Trop de requêtes. Veuillez patienter avant de réessayer.", 'bot');
+                                } else {
+                                    clearInterval(interval);
+                                    supprimerAnimationFrappe();
+                                    ajouterMessage("Erreur de connexion ou du serveur. Essayez plus tard.", 'bot');
+                                }
+                                textarea.prop('disabled', false).val(texte);
+                                sendButton.prop('disabled', false);
+                            });
+                        }, pollInterval);
+                    },
+                    error: function () {
+                        supprimerAnimationFrappe();
+                        ajouterMessage("Erreur lors de l'envoi de la requête.", 'bot');
+                        textarea.prop('disabled', false).val(texte);
+                        sendButton.prop('disabled', false);
+                    }
+                });
+            });
+            */
+        </script>
+    {% endcomment %}
 {% endblock %}

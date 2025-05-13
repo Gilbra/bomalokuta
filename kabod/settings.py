@@ -124,11 +124,10 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.UserRateThrottle",
         "rest_framework.throttling.AnonRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES":[],
-    #DEFAULT_THROTTLE_RATES": {
-    #    "user": "30/minute",
-    #    "anon": "20/minute",
-    #}
+    "DEFAULT_THROTTLE_RATES": {
+        "user": "120/minute",
+        "anon": "60/minute",
+    }
 }
 
 # Celery fallback (dev/local sans Redis worker)
