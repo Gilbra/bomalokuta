@@ -21,11 +21,13 @@ def analyze_fake_news(text):
 
 # Interface Gradio
 iface = gr.Interface(
-    fn=analyze_fake_news,  # Utilisation de la fonction optimisée
+    fn=analyze_fake_news,
     inputs="text",
     outputs="text",
     title="Détection de Fake News",
-    description="Entrez un texte et l’IA analysera s'il s'agit d'une fake news."
+    description="Entrez un texte et l’IA analysera.",
+    **server_name="0.0.0.0", server_port=7860**  # Expose API correctement
 )
+
 
 iface.launch()

@@ -1,7 +1,7 @@
 # utils.py
 import requests
 
-HUGGINGFACE_API = "https://Gilbra-bomalkt.hf.space/run/predict"
+HUGGINGFACE_API = "https://gilbra-bomalkt.hf.space/predict"
 
 def send_to_chatglm(prompt):
     try:

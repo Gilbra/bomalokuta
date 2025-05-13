@@ -5,3 +5,5 @@ data = {"data": ["Test fake news"]}
 
 response = requests.post(url, json=data)
 print(response.json())  # Vérifier le retour API
+
+input("\n")
