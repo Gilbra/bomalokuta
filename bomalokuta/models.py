@@ -1,6 +1,7 @@
 # bomalokuta/models.py
 
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from accounts.models import User as UserGeneral
 CONTENT_TYPE_CHOICES = [
@@ -214,3 +215,15 @@ class Reaction(models.Model):
 
     def __str__(self):
         return f'Réaction de {self.user} au message {self.message.id}'
+
+
+class TaskRecord(models.Model):
+    task_id = models.CharField(max_length=255, unique=True)
+    input_text = models.TextField()
+    status = models.CharField(max_length=50, default='pending')  # pending / success / failure
+    result = models.JSONField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'Tâche {self.task_id} - {self.status}'
+

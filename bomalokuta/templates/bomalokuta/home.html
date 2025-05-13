@@ -92,29 +92,50 @@
         $('button[type=submit]').prop('disabled', true);
         afficherAnimationFrappe();
 
+        // Envoi vers l'API asynchrone
         $.ajax({
-            url: "./submit/",
-            type: "POST",
+            url: "/bomalokuta/api/analyze/",
+            method: "POST",
             contentType: "application/json",
-            headers: {
-                "X-CSRFToken": "{{ csrf_token }}"
-            },
+            headers: {"X-CSRFToken": "{{ csrf_token }}"},
             data: JSON.stringify({ text: texte }),
-            success: function (data) {
-                supprimerAnimationFrappe();
-                ajouterMessage(data.message, 'bot');
-                $('#texteAAnalyser').prop('disabled', false);
-                $('button[type=submit]').prop('disabled', false);
+            success: function(data) {
+                const taskId = data.task_id;
+                // Polling pour le résultat
+                const interval = setInterval(function() {
+                    $.get(`/bomalokuta/api/analyze/${taskId}/`, function(res) {
+                        if (res.status === 'done') {
+                            clearInterval(interval);
+                            ajouterMessage(res.result, 'bot');
+                            $('#texteAAnalyser').prop('disabled', false);
+                            $('button[type=submit]').prop('disabled', false);
+                        }
+                    });
+                }, 2000);
             },
-            error: function (xhr) {
-                supprimerAnimationFrappe();
-                let errMsg = xhr.responseJSON?.message || "Erreur lors de l'analyse.";
-                ajouterMessage(`<strong>Erreur :</strong> ${errMsg}`, 'bot');
+            error: function(xhr) {
+                ajouterMessage("Erreur lors de la requête.", 'bot');
                 $('#texteAAnalyser').prop('disabled', false);
                 $('button[type=submit]').prop('disabled', false);
             }
         });
+
+
     });
+
+    function suivreTache(task_id) {
+        let interval = setInterval(function () {
+            $.get(`/bomalokuta/api/resultats/${task_id}/`, function (data) {
+                if (data.status === 'success' || data.status === 'failure') {
+                    supprimerAnimationFrappe();
+                    ajouterMessage(data.result.message || data.result.error, 'bot');
+                    $('#texteAAnalyser').prop('disabled', false);
+                    $('button[type=submit]').prop('disabled', false);
+                    clearInterval(interval);
+                }
+            });
+        }, 2000); // toutes les 2 secondes
+    }
 
 </script>
 {% endblock %}

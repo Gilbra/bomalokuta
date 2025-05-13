@@ -1,3 +1,4 @@
+# utils.py
 import requests
 
 HUGGINGFACE_API = "https://Gilbra-bomalkt.hf.space/run/predict"
