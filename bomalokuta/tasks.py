@@ -1,35 +1,44 @@
 # task.py
 import logging
+from .models import TaskRecord
+import uuid
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+import uuid
+import logging
 from celery import shared_task
 from .models import TaskRecord
-from .utils import send_to_chatglm  # IA via HF
+from .utils import send_to_chatglm  # ou ce que tu utilises comme moteur IA
+
+logger = logging.getLogger(__name__)
+
 
 @shared_task(bind=True)
 def analyze_text_task(self, task_id, text):
-    logger.info(f"Celery Texte reçu : {text}")
+    logger.info(f"[Celery] Texte reçu pour analyse (task_id={task_id}): {text}")
     try:
-        # Appel au modèle IA externe
-        result = send_to_chatglm(text)
+        result = send_to_chatglm(text)  # Fonction externe d’analyse IA
         TaskRecord.objects.filter(task_id=task_id).update(
-            status="done",  # PAS "success"
+            status="done",  # ou "success" selon ton schéma
             result={"message": result}
         )
-
     except Exception as e:
+        logger.error(f"[Celery] Erreur pendant l’analyse : {e}")
         TaskRecord.objects.filter(task_id=task_id).update(
             status="failure",
             result={"error": str(e)}
         )
 
+
 @shared_task
 def analyze_text_async(text):
-    """
-    Tâche Celery qui appelle ChatGLM et retourne le JSON réponse.
-    """
-    logger.info(f"async Texte reçu : {text}")
-    print("+++++")
-    return send_to_chatglm(text)
+    task_id = str(uuid.uuid4())
+    TaskRecord.objects.create(
+        task_id=task_id,
+        status="queued",
+        result=None
+    )
+    analyze_text_task.delay(task_id, text)
+    return task_id  # Ce retour est optionnel

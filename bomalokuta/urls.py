@@ -1,7 +1,7 @@
 # bomalokuta/urls.py
 from django.urls import path
 from .views import home, dashboard
-from .api_views import AnalyzeAPIView, AnalyzeResultAPIView, ReactionAPIView
+from .api_views import *
 # déjà dans .api_views import AnalyzeAPIView, AnalyzeResultAPIView...
 #from .drf_views import AnalyzeView, ResultView
 
@@ -16,5 +16,6 @@ urlpatterns = [
     
     path('api/analyze/', AnalyzeAPIView.as_view(), name='api-analyze'),
     path('api/analyze/<str:task_id>/', AnalyzeResultAPIView.as_view(), name='api-analyze-result'),
+    path('api/tasks/', TaskListAPIView.as_view(), name='api-task-list'),
     path('api/reaction/', ReactionAPIView.as_view(), name='api-reaction'),
 ]

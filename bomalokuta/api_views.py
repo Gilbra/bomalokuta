@@ -4,10 +4,12 @@ import logging
 from django.conf import settings
 from celery.result import AsyncResult
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 
+from .serializers import TaskRecordSerializer
 from .models import TaskRecord, CustomUser, Message, Reaction
 from .celery_utils import safe_analyze_text
 
@@ -29,7 +31,7 @@ class AnalyzeAPIView(APIView):
 
         # safe_analyze_text crée le TaskRecord et déclenche la tâche
         response = safe_analyze_text(text)
-
+        
         # response a toujours "task_id" et "status"
         # si status == "queued", la tâche est en attente ; sinon "done" ou "error"
         code = status.HTTP_202_ACCEPTED if response["status"] == "queued" else status.HTTP_200_OK
@@ -44,7 +46,6 @@ class AnalyzeAPIView(APIView):
             payload["error"] = response["result"]
 
         return Response(payload, status=code)
-
 
 class AnalyzeResultAPIView(APIView):
     """
@@ -82,7 +83,15 @@ class AnalyzeResultAPIView(APIView):
             "result": res.result
         }, status=status.HTTP_200_OK)
 
-
+class TaskListAPIView(ListAPIView):
+    """
+    GET /api/tasks/
+    Renvoie toutes les tâches enregistrées (analyses), triées par date.
+    """
+    queryset = TaskRecord.objects.all().order_by('-created_at')
+    serializer_class = TaskRecordSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    
 class ReactionAPIView(APIView):
     """
     POST /api/reaction/

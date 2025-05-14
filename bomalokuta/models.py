@@ -226,4 +226,3 @@ class TaskRecord(models.Model):
     
     def __str__(self):
         return f'Tâche {self.task_id} - {self.status}'
-

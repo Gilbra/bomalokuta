@@ -68,31 +68,5 @@ $(function() {
       }
     });
   });
-
-  let attempts = 0, maxAttempts = 15;
-  const interval = setInterval(() => {
-    if (++attempts >= maxAttempts) {
-      clearInterval(interval);
-      supprimerAnimationFrappe();
-      ajouterMessage("Le serveur ne répond pas, réessaie plus tard.", 'bot');
-      $('#texteAAnalyser').prop('disabled', false).val(lastUserText);
-      $('button[type=submit]').prop('disabled', false);
-      return;
-    }
-
-    $.get(`/bomalokuta/api/analyze/${taskId}/`, function(res) {
-      console.log("Polling status:", res);
-      if (res.status === 'done') {
-        clearInterval(interval);
-        supprimerAnimationFrappe();
-        ajouterMessage(res.result, 'bot');
-        $('#texteAAnalyser').prop('disabled', false).val('');
-        $('button[type=submit]').prop('disabled', false);
-      }
-    }).fail(function(err) {
-      console.warn("Erreur polling:", err);
-    });
-  }, 2000);
-
 });
 

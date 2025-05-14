@@ -4,13 +4,9 @@ import requests
 
 HUGGINGFACE_API = "https://gilbra-bomalkt.hf.space/predict"
 
-def send_to_chatglm(prompt):
-    print('00000')
-    return prompt
-    
 
-
-def send_to_chatglm_(prompt, retries=3, delay=3):
+def send_to_chatglm(prompt, retries=3, delay=3):
+    print(prompt)
     for i in range(retries):
         try:
             response = requests.post(
