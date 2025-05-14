@@ -1,31 +1,31 @@
-# task.py
-import logging
-from .models import TaskRecord
-import uuid
+# tasks.py
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-import uuid
 import logging
 from celery import shared_task
+
 from .models import TaskRecord
-from .utils import send_to_chatglm  # ou ce que tu utilises comme moteur IA
+from .utils import analyze_fake_news  # Ton moteur IA
 
 logger = logging.getLogger(__name__)
 
 
 @shared_task(bind=True)
 def analyze_text_task(self, task_id, text):
-    logger.info(f"[Celery] Texte reçu pour analyse (task_id={task_id}): {text}")
+    """
+    Tâche principale appelée avec un task_id déjà existant dans la base.
+    """
+    logger.info(f"[Celery] Analyse du texte (task_id={task_id}) démarrée.")
     try:
-        result = send_to_chatglm(text)  # Fonction externe d’analyse IA
+        result = analyze_fake_news(text)
+
         TaskRecord.objects.filter(task_id=task_id).update(
-            status="done",  # ou "success" selon ton schéma
+            status="done",
             result={"message": result}
         )
+        logger.info(f"[Celery] Analyse terminée avec succès pour {task_id}.")
+
     except Exception as e:
-        logger.error(f"[Celery] Erreur pendant l’analyse : {e}")
+        logger.error(f"[Celery] Échec de l’analyse pour {task_id} : {e}")
         TaskRecord.objects.filter(task_id=task_id).update(
             status="failure",
             result={"error": str(e)}
@@ -34,11 +34,21 @@ def analyze_text_task(self, task_id, text):
 
 @shared_task
 def analyze_text_async(text):
-    task_id = str(uuid.uuid4())
+    """
+    Tâche alternative (non utilisée avec safe_analyze_text).
+    Conservée ici pour compatibilité éventuelle.
+    """
+    from uuid import uuid4
+    task_id = str(uuid4())
+
     TaskRecord.objects.create(
         task_id=task_id,
+        input_text=text,
         status="queued",
         result=None
     )
+
+    # Appel asynchrone de la tâche réelle
     analyze_text_task.delay(task_id, text)
-    return task_id  # Ce retour est optionnel
+
+    return task_id

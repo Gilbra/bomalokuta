@@ -179,4 +179,23 @@ LOGGING = {
         "level": "INFO",
     },
 }
+""""
+USE_CELERY_FALLBACK = os.environ.get("USE_CELERY_FALLBACK", "true") == "true"
+CELERY_TASK_ALWAYS_EAGER = USE_CELERY_FALLBACK
+CELERY_TASK_EAGER_PROPAGATES = USE_CELERY_FALLBACK
 
+CELERY_BROKER_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# settings.py
+USE_CELERY_FALLBACK = not os.getenv("USE_CELERY", "false").lower() in ["1", "true", "yes"]
+"""
+
+MIME_TYPES = {
+    ".css": "text/css",
+    ".js": "application/javascript",
+    ".png": "image/png",
+}

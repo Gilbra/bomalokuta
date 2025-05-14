@@ -18,9 +18,9 @@ logger = logging.getLogger(__name__)
 class AnalyzeAPIView(APIView):
     """
     POST /api/analyze/
-    - lance l'analyse (via Celery ou fallback local)
-    - crée toujours un TaskRecord
-    - renvoie toujours {"task_id": "...", "status": "..."}
+    - Lance l’analyse via Celery ou fallback local
+    - Crée un TaskRecord (optionnellement lié à un utilisateur)
+    - Retourne un objet avec task_id, status, et éventuellement result ou error
     """
     permission_classes = [AllowAny]
 
@@ -29,43 +29,43 @@ class AnalyzeAPIView(APIView):
         if not text:
             return Response({"error": "Texte requis"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # safe_analyze_text crée le TaskRecord et déclenche la tâche
-        # Associe l'utilisateur si connecté
+        # Récupération de l'utilisateur connecté (optionnel)
         user = None
         if request.user.is_authenticated:
             try:
                 user = CustomUser.objects.get(user_associated=request.user)
             except CustomUser.DoesNotExist:
-                pass  # ou logguer l'erreur
-
-        response = safe_analyze_text(text, user=user)
+                logger.warning(f"[Analyze] Utilisateur connecté introuvable : {request.user.username}")
         
-        # response a toujours "task_id" et "status"
-        # si status == "queued", la tâche est en attente ; sinon "done" ou "error"
-        code = status.HTTP_202_ACCEPTED if response["status"] == "queued" else status.HTTP_200_OK
+        # Lance l’analyse via safe_analyze_text
+        response = safe_analyze_text(text, user=user)
+
+        # Construction de la réponse
         payload = {
             "task_id": response["task_id"],
             "status": response["status"]
         }
-        # si fini immédiatement, on peut aussi renvoyer le résultat
+
         if response["status"] == "done":
             payload["result"] = response["result"]
         elif response["status"] == "error":
             payload["error"] = response["result"]
 
+        code = status.HTTP_202_ACCEPTED if response["status"] == "queued" else status.HTTP_200_OK
         return Response(payload, status=code)
+
 
 class AnalyzeResultAPIView(APIView):
     """
     GET /api/analyze/{task_id}/
-    - rend l'état et le résultat via TaskRecord (fallback) ou AsyncResult (Celery)
+    - Renvoie l’état d’une tâche et son résultat final si disponible
+    - Peut interroger TaskRecord (fallback local) ou AsyncResult (Celery)
     """
     permission_classes = [AllowAny]
 
     def get(self, request, task_id):
-        # mode fallback local : on lit la table TaskRecord
         if settings.USE_CELERY_FALLBACK:
-            logger.debug(f"[Fallback] consultation TaskRecord {task_id}")
+            logger.debug(f"[Fallback] Lecture TaskRecord pour {task_id}")
             try:
                 task = TaskRecord.objects.get(task_id=task_id)
             except TaskRecord.DoesNotExist:
@@ -79,17 +79,21 @@ class AnalyzeResultAPIView(APIView):
                 "result": task.result
             }, status=status.HTTP_200_OK)
 
-        # mode Celery : on interroge directement le broker pour l'état
+        # Sinon, lecture depuis Celery (mode production)
         res = AsyncResult(task_id)
         if not res.ready():
-            return Response({"task_id": task_id, "status": "pending"}, status=status.HTTP_200_OK)
+            return Response({
+                "task_id": task_id,
+                "status": "pending"
+            }, status=status.HTTP_200_OK)
 
-        # prêt : res.result contient la valeur renvoyée par la tâche analyze_text_async
+        # Résultat prêt (renvoyé par la tâche Celery)
         return Response({
             "task_id": task_id,
             "status": "done",
             "result": res.result
         }, status=status.HTTP_200_OK)
+
 
 class TaskListAPIView(ListAPIView):
     """

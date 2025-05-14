@@ -55,6 +55,19 @@ $(function () {
     $('#typing').remove();
   }
 
+  function formaterResultat(result) {
+    if (typeof result === 'string') return result; // fallback texte brut
+
+    const verdict = `<strong>🕵️ Verdict :</strong> ${result.verdict || 'Inconnu'}`;
+    const score = `<strong>🔍 Confiance :</strong> ${result.score ?? 'N/A'}%`;
+    const explication = `<strong>💬 Explication :</strong> ${result.explication || '...'}`;
+    const sources = result.sources && result.sources.length
+      ? `<strong>📚 Sources :</strong><br><ul>${result.sources.map(s => `<li><a href="${s}" target="_blank">${s}</a></li>`).join('')}</ul>`
+      : `<strong>📚 Sources :</strong> Aucune`;
+
+    return `${verdict}<br>${score}<br>${explication}<br>${sources}`;
+  }
+
   $('#analyseForm').on('submit', function (e) {
     e.preventDefault();
     const texte = $('#texteAAnalyser').val().trim();
@@ -73,23 +86,25 @@ $(function () {
       headers: { "X-CSRFToken": "{{ csrf_token }}" },
       data: JSON.stringify({ text: texte }),
       success: function (data) {
-        if (data.status === 'done') {
+        const afficher = (res) => {
           supprimerAnimationFrappe();
-          const msg = typeof data.result === 'object' ? data.result.message : data.result;
-          ajouterMessage(msg, 'bot');
+          ajouterMessage(formaterResultat(res), 'bot');
           $('#texteAAnalyser').prop('disabled', false).val('');
           $('button[type=submit]').prop('disabled', false);
-          return;
+        };
+
+        if (data.status === 'done') {
+          return afficher(data.result);
         }
 
         const taskId = data.task_id;
         let attempts = 0, maxAttempts = 15;
 
-        const interval = setInterval(function () {
+        const interval = setInterval(() => {
           if (++attempts >= maxAttempts) {
             clearInterval(interval);
             supprimerAnimationFrappe();
-            ajouterMessage("⏱️ Le serveur ne répond pas, réessaie plus tard.", 'bot');
+            ajouterMessage("⚠️ L'IA est temporairement indisponible. Veuillez réessayer plus tard.", 'bot');
             $('#texteAAnalyser').prop('disabled', false).val(lastUserText);
             $('button[type=submit]').prop('disabled', false);
             return;
@@ -98,11 +113,7 @@ $(function () {
           $.get(`/bomalokuta/api/analyze/${taskId}/`, function (res) {
             if (res.status === 'done') {
               clearInterval(interval);
-              supprimerAnimationFrappe();
-              const msg = typeof res.result === 'object' ? res.result.message : res.result;
-              ajouterMessage(msg, 'bot');
-              $('#texteAAnalyser').prop('disabled', false).val('');
-              $('button[type=submit]').prop('disabled', false);
+              afficher(res.result);
             } else if (res.status === 'error') {
               clearInterval(interval);
               supprimerAnimationFrappe();

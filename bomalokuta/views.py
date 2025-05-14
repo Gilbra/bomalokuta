@@ -9,7 +9,7 @@ import json # Pour lire les données JSON envoyées dans le corps de la requête
 
 from bomalokuta.models import *
 
-from bomalokuta.utils import send_to_chatglm
+from bomalokuta.utils import call_space as analyze_fake_news
 
 def home(request):
     try:
@@ -68,7 +68,7 @@ def analyze_text_view(request):
 
                 # --- LOGIQUE FUTURE PRINCIPALE ICI ---
                 # Étape 4: Appeler le modèle IA avec text_to_analyze
-                ia_response = send_to_chatglm(text_to_analyze)
+                ia_response = analyze_fake_news(text_to_analyze)
                 # Étape 5: Effectuer la recherche web avec text_to_analyze ou des termes dérivés
                 # Étape 6: Combiner les résultats de l'IA et de la recherche web pour l'analyse finale
                 # Déterminer si l'info est vraie/fausse et générer des commentaires/sources
