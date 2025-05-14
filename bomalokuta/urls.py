@@ -17,5 +17,7 @@ urlpatterns = [
     path('api/analyze/', AnalyzeAPIView.as_view(), name='api-analyze'),
     path('api/analyze/<str:task_id>/', AnalyzeResultAPIView.as_view(), name='api-analyze-result'),
     path('api/tasks/', TaskListAPIView.as_view(), name='api-task-list'),
+    path('api/user_tasks/', UserTaskListAPIView.as_view(), name='api-user-task-list'),
+    path('api/mytasks/', MyTasksAPIView.as_view(), name='api-mytasks'),
     path('api/reaction/', ReactionAPIView.as_view(), name='api-reaction'),
 ]

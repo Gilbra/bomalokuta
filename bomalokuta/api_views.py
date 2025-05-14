@@ -30,7 +30,15 @@ class AnalyzeAPIView(APIView):
             return Response({"error": "Texte requis"}, status=status.HTTP_400_BAD_REQUEST)
 
         # safe_analyze_text crée le TaskRecord et déclenche la tâche
-        response = safe_analyze_text(text)
+        # Associe l'utilisateur si connecté
+        user = None
+        if request.user.is_authenticated:
+            try:
+                user = CustomUser.objects.get(user_associated=request.user)
+            except CustomUser.DoesNotExist:
+                pass  # ou logguer l'erreur
+
+        response = safe_analyze_text(text, user=user)
         
         # response a toujours "task_id" et "status"
         # si status == "queued", la tâche est en attente ; sinon "done" ou "error"
@@ -91,7 +99,34 @@ class TaskListAPIView(ListAPIView):
     queryset = TaskRecord.objects.all().order_by('-created_at')
     serializer_class = TaskRecordSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    
+   
+class UserTaskListAPIView(ListAPIView):
+    serializer_class = TaskRecordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return TaskRecord.objects.filter(user__user_associated=self.request.user).order_by('-created_at')
+
+class MyTasksAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            custom_user = CustomUser.objects.get(user_associated=request.user)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "Profil utilisateur manquant"}, status=400)
+
+        tasks = TaskRecord.objects.filter(user=custom_user).order_by('-created_at')
+        serialized = [
+            {
+                "task_id": t.task_id,
+                "status": t.status,
+                "result": t.result,
+                "created_at": t.created_at
+            } for t in tasks
+        ]
+        return Response(serialized)
+ 
 class ReactionAPIView(APIView):
     """
     POST /api/reaction/

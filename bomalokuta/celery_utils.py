@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def safe_analyze_text(text):
+def safe_analyze_text(text, user=None):
     if not settings.USE_CELERY_FALLBACK:
         # Utilisation de Celery
         task = analyze_text_async.delay(text)
@@ -23,6 +23,7 @@ def safe_analyze_text(text):
         TaskRecord.objects.create(
             task_id=task_id,
             status="done",
+            user=user,
             result={"message": result}
         )
         return {"task_id": task_id, "status": "done", "result": {"message": result}}

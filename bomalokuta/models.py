@@ -219,10 +219,20 @@ class Reaction(models.Model):
 
 class TaskRecord(models.Model):
     task_id = models.CharField(max_length=255, unique=True)
+    user = models.ForeignKey(  # <- NOUVEAU
+        'CustomUser',  # ou settings.AUTH_USER_MODEL si CustomUser étend User
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='tasks',
+        verbose_name=_('Utilisateur'),
+        help_text=_('L\'utilisateur ayant déclenché cette tâche.')
+    )
     input_text = models.TextField()
-    status = models.CharField(max_length=50, default='pending')  # pending / success / failure
+    status = models.CharField(max_length=50, default='pending')  # pending / done / failure
     result = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return f'Tâche {self.task_id} - {self.status}'
+
