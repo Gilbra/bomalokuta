@@ -75,11 +75,7 @@ $(function () {
       success: function (data) {
         if (data.status === 'done') {
           supprimerAnimationFrappe();
-          const msg = typeof data.result === 'object' ? data.result.message : data.result;
-          ajouterMessage(msg, 'bot');
-          declencherNotificationGlobale();
-          $('#texteAAnalyser').prop('disabled', false).val('');
-          $('button[type=submit]').prop('disabled', false);
+          afficherResultatIA(data.result);
           return;
         }
 
@@ -100,8 +96,7 @@ $(function () {
             if (res.status === 'done') {
               clearInterval(interval);
               supprimerAnimationFrappe();
-              const msg = typeof res.result === 'object' ? res.result.message : res.result;
-              ajouterMessage(msg, 'bot');
+              afficherResultatIA(res.result);
               $('#texteAAnalyser').prop('disabled', false).val('');
               $('button[type=submit]').prop('disabled', false);
             } else if (res.status === 'error') {
@@ -125,4 +120,44 @@ $(function () {
       }
     });
   });
+
+  function afficherResultatIA(resultat) {
+    if (typeof resultat === 'string') {
+      try {
+        resultat = JSON.parse(resultat);
+      } catch (e) {
+        ajouterMessage(resultat, 'bot');
+        return;
+      }
+    }
+
+    const verdictColor = {
+      "Vrai": "success",
+      "Faux": "danger",
+      "Douteux": "warning",
+      "Erreur": "secondary"
+    }[resultat.verdict] || "secondary";
+
+    const badge = `<span class="badge bg-${verdictColor}">${resultat.verdict}</span>`;
+    const scoreBar = `
+      <div class="progress mt-2" style="height: 20px;">
+        <div class="progress-bar bg-${verdictColor}" role="progressbar" style="width: ${resultat.score}%;">
+          ${resultat.score}%
+        </div>
+      </div>
+    `;
+
+    const sources = resultat.sources && resultat.sources.length > 0
+      ? `<p><strong>Sources :</strong><br>${resultat.sources.map(src => `<a href="${src}" target="_blank">${src}</a>`).join('<br>')}</p>`
+      : '';
+
+    const content = `
+      <p><strong>Verdict :</strong> ${badge}</p>
+      <p><strong>Confiance :</strong> ${scoreBar}</p>
+      <p><strong>Explication :</strong> ${resultat.explication}</p>
+      ${sources}
+    `;
+
+    ajouterMessage(content, 'bot');
+  }
 });

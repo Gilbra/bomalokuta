@@ -55,11 +55,12 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     
     'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "https://bomalokuta.onrender.com/",  # Pour les tests locaux
-]
+#CORS_ALLOWED_ORIGINS = [
+#    "https://bomalokuta.onrender.com/",  # Pour les tests locaux
+#]
 
 CORS_ALLOW_ALL_ORIGINS = True  # Pour les tests. En prod, restreignez les origines.
 
@@ -123,6 +124,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "static"
 STATICFILES_DIRS = [BASE_DIR / "staticfiles"]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # DRF & Throttle
 REST_FRAMEWORK = {
