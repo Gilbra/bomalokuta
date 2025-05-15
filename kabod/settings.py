@@ -30,11 +30,15 @@ INSTALLED_APPS = [
 
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
+    'corsheaders',
     "drf_yasg",
+    "channels",
 
+    # Apps
     "accounts",
     "bomalokuta",
     "vax",
+    'terranova',
 ]
 
 SITE_ID = 1
@@ -49,7 +53,16 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+#CORS_ALLOWED_ORIGINS = [
+#    "https://terranova-frontend.onrender.com",
+#    "http://localhost:5000",  # Pour les tests locaux
+#]
+
+CORS_ALLOW_ALL_ORIGINS = True  # Pour les tests. En prod, restreignez les origines.
 
 ROOT_URLCONF = "kabod.urls"
 
@@ -115,10 +128,11 @@ STATICFILES_DIRS = [BASE_DIR / "staticfiles"]
 # DRF & Throttle
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        'rest_framework.authentication.SessionAuthentication',
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # Par défaut, tout est public
     ],
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.UserRateThrottle",
@@ -143,6 +157,15 @@ else:
     CELERY_TASK_SERIALIZER = 'json'
     CELERY_RESULT_SERIALIZER = 'json'
 
+# Configuration du channel_layer
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(env("REDIS_URL"),)],
+        },
+    },
+}
 
 # Fonction pour vérifier si Redis est accessible localement
 def is_redis_available(host='localhost', port=6379):
@@ -199,3 +222,5 @@ MIME_TYPES = {
     ".js": "application/javascript",
     ".png": "image/png",
 }
+
+ASGI_APPLICATION = "kabod.routing.application"
