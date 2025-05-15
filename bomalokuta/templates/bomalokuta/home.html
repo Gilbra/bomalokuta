@@ -8,7 +8,8 @@
     {% if user.is_authenticated %}
         {{ request.user.username }} !
     {% else %}
-        visiteur, veuillez <a href="{% url 'accounts:login' %}">vous connecter</a> pour sauvegarder vos vérifications !
+        visiteur, veuillez <a href="{% url 'accounts:login' %}">vous connecter</a> pour sauvegarder vos vérifications ! 
+        <a href="../terranova/">terranova</a>
     {% endif %}
 </h2>
 

@@ -57,10 +57,9 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-#CORS_ALLOWED_ORIGINS = [
-#    "https://terranova-frontend.onrender.com",
-#    "http://localhost:5000",  # Pour les tests locaux
-#]
+CORS_ALLOWED_ORIGINS = [
+    "https://bomalokuta.onrender.com/",  # Pour les tests locaux
+]
 
 CORS_ALLOW_ALL_ORIGINS = True  # Pour les tests. En prod, restreignez les origines.
 
