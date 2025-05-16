@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Dechet, PointCollecte, Evenement, Statistique, Recompense
-
+from .models import *
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = ('user_associated', 'points', 'role')
     search_fields = ('user_associated__username', 'role')
@@ -36,6 +35,17 @@ class RecompenseAdmin(admin.ModelAdmin):
     search_fields = ('nom',)
     ordering = ('points',)
 
+class ResourceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'created_at')
+    search_fields = ('title', 'description')
+    list_filter = ('created_at',)
+
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'auteur', 'created_at', 'updated_at')
+    search_fields = ('title', 'content')
+    list_filter = ('created_at', 'auteur')
+    
+    
 # Registering the models with the admin site
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Dechet, DechetAdmin)
@@ -43,3 +53,6 @@ admin.site.register(PointCollecte, PointCollecteAdmin)
 admin.site.register(Evenement, EvenementAdmin)
 admin.site.register(Statistique, StatistiqueAdmin)
 admin.site.register(Recompense, RecompenseAdmin)
+
+admin.site.register(Resource, ResourceAdmin)
+admin.site.register(News, NewsAdmin)

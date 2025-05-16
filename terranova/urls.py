@@ -13,6 +13,9 @@ router.register(r'evenements', EvenementViewSet)
 router.register(r'statistiques', StatistiqueViewSet)
 router.register(r'recompenses', RecompenseViewSet)
 
+router.register(r'resources', ResourceViewSet)
+router.register(r'news', NewsViewSet)
+
 urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

@@ -83,3 +83,32 @@ class Recompense(models.Model):
 
     def __str__(self):
         return self.nom
+    
+class Resource(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    file = models.FileField(upload_to='resources/')  # Pour les fichiers PDF, tutoriels, etc.
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Ressource'
+        verbose_name_plural = 'Ressources'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+    
+class News(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    auteur = models.OneToOneField(UserGeneral, on_delete=models.CASCADE, related_name='auteur_news', verbose_name=_('auteur'))
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Actualité'
+        verbose_name_plural = 'Actualités'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title

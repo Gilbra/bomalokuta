@@ -49,3 +49,11 @@ class RecompenseViewSet(viewsets.ModelViewSet):
     queryset = Recompense.objects.all()
     serializer_class = RecompenseSerializer
     permission_classes = [permissions.AllowAny]  # Permet l'accès sans authentification
+    
+class ResourceViewSet(viewsets.ModelViewSet):
+    queryset = Resource.objects.all()
+    serializer_class = ResourceSerializer
+    
+class NewsViewSet(viewsets.ModelViewSet):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer

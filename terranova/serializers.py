@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Dechet, PointCollecte, Evenement, Statistique, Recompense
+from .models import *
 from accounts.models import User
 
 class UserSerializer(serializers.ModelSerializer):
@@ -78,3 +78,13 @@ class RecompenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recompense
         fields = ['id', 'nom', 'description', 'points']
+        
+class ResourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Resource
+        fields = ['id', 'title', 'description', 'file', 'created_at']
+        
+class NewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = News
+        fields = ['id', 'title', 'content', 'auteur', 'created_at', 'updated_at']
