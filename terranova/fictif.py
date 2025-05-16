@@ -128,7 +128,7 @@ def create_fake_news(n=100):
         print('Actualité créée')
 
 #if __name__ == "__main__":
-print('on crée les fake !')
+print('on crée les fake datas !')
 create_fake_users(100)
 create_fake_notifications(100)
 create_fake_support_tickets(100)
