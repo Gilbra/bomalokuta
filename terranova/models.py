@@ -59,6 +59,7 @@ class Evenement(models.Model):
     utilisateur = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     titre = models.CharField(max_length=200)
     description = models.TextField()
+    file = models.FileField(blank=True, null=True, upload_to='news/')
     date = models.DateTimeField()
     lieu = models.CharField(max_length=200)
 
@@ -101,6 +102,7 @@ class Resource(models.Model):
 class News(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
+    file = models.FileField(blank=True, null=True, upload_to='news/')
     auteur = models.OneToOneField(UserGeneral, on_delete=models.CASCADE, related_name='auteur_news', verbose_name=_('auteur'))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
