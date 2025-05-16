@@ -3,13 +3,14 @@ import sys
 import django
 import random
 from faker import Faker
+
 # Ajoutez le chemin du projet à PYTHONPATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from accounts.models import User, Notification, SupportTicket
-from terranova.models import CustomUser, Dechet, PointCollecte, Evenement, Statistique, Recompense  # Remplacez 'your_app' par le nom de votre application
+from terranova.models import CustomUser, Dechet, PointCollecte, Evenement, Statistique, Recompense, Resource, News
 
 # Configuration de Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kabod.settings')  # Remplacez 'your_project' par le nom de votre projet
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kabod.settings')
 django.setup()
 
 fake = Faker()
@@ -107,12 +108,34 @@ def create_fake_recompenses(n=100):
         )
         print('Récompense créée')
 
-if __name__ == "__main__":
-    create_fake_users(100)
-    create_fake_notifications(100)
-    create_fake_support_tickets(100)
-    create_fake_dechets(100)
-    create_fake_points_collecte(100)
-    create_fake_evenements(100)
-    create_fake_statistiques(100)
-    create_fake_recompenses(100)
+def create_fake_resources(n=100):
+    for _ in range(n):
+        Resource.objects.create(
+            title=fake.sentence(),
+            description=fake.text(),
+            file=fake.file_path(depth=3, category='data')  # Simule un fichier
+        )
+        print('Ressource créée')
+
+def create_fake_news(n=100):
+    users = User.objects.all()
+    for _ in range(n):
+        News.objects.create(
+            title=fake.sentence(),
+            content=fake.text(),
+            auteur=random.choice(users)
+        )
+        print('Actualité créée')
+
+#if __name__ == "__main__":
+print('on crée les fake !')
+create_fake_users(100)
+create_fake_notifications(100)
+create_fake_support_tickets(100)
+create_fake_dechets(100)
+create_fake_points_collecte(100)
+create_fake_evenements(100)
+create_fake_statistiques(100)
+create_fake_recompenses(100)
+create_fake_resources(100)
+create_fake_news(100)
